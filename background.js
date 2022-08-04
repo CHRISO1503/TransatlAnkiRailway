@@ -7,6 +7,11 @@ chrome.runtime.onMessage.addListener(
     }
 )
 
+// Initialize badge with LOAD
+chrome.action.setBadgeText({
+    text: 'LOAD'
+});
+
 // Ankiconnect
 function anki(action, params = {}) {
     return fetch("http://127.0.0.1:8765/", {
@@ -70,8 +75,9 @@ function makeTranslationLists(cards) {
             }
         }
     }
+    // Set badge to ON
     chrome.action.setBadgeText({
-        text: 'FUCK'
+        text: 'ON'
     });
 }
 
