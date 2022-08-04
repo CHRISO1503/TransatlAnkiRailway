@@ -10,18 +10,18 @@ for (i = 0; i < htmlElems.length; i++) {
     htmlText[i] = htmlElems[i].innerText;
 }
 
-// Send htmlText to background.js for translation
+// Send htmlText to background.js for translation then receive converted text
 chrome.runtime.sendMessage({
     'htmlText': htmlText,
 }, ).then(storeConvertedText);
 
 // Poo mode
-if (Math.random() < 0.01) {
-    for (i = 0; i < htmlElems.length; i++) {
-        console.log(htmlElems[i].innerText);
-        htmlElems[i].innerText = 'poo';
-    }
-}
+// if (Math.random() < 0.01) {
+//     for (i = 0; i < htmlElems.length; i++) {
+//         console.log(htmlElems[i].innerText);
+//         htmlElems[i].innerText = 'poo';
+//     }
+// }
 
 
 var convertedText = [];
@@ -29,7 +29,6 @@ var convertedText = [];
 function storeConvertedText(_convertedText) {
     convertedText = _convertedText;
     toggleTranslation();
-    translated = true;
 }
 
 // Toggle the pages text's translated state
@@ -43,4 +42,5 @@ function toggleTranslation() {
             htmlElems[i].innerText = convertedText[i];
         }
     }
+    translated = !translated;
 }

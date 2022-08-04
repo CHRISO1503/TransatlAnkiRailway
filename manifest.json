@@ -13,6 +13,9 @@
             "matches": [
                 "<all_urls>"
             ],
+            "exclude_matches": [
+                "https://www.howtostudykorean.com/*"
+            ],
             "js": ["thirdParty/jquery-3.6.0.js", "content.js"]
         }
     ],
