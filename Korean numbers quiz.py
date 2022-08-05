@@ -2,25 +2,28 @@ from random import random
 from unicodedata import digit
 
 # mode 0 = sino-korean, mode 1 = pure korean
-mode = 0
+mode = 1
 sinoUnits = ['일', '이', '삼', '사', '오', '욕', '칠', '팔', '구']
 sinoOrders = ['십', '백', '천', '만']
+pureUnits = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉']
+pureTens = ['', '열', '스물', '서른', '마흔', '쉰']
 
 
-def translateNumber(x):
-    if mode == 0:
-        koreanString = ''
-        digitList = [int(y) for y in str(x)]
+def translateNumber(x, _mode):
+    koreanString = ''
+    digitList = [int(y) for y in str(x)]
 
+    if _mode == 0:
         # Force digit list to be 5 digits long by adding 0's to front
         if (len(digitList) < 5):
             for i in range(5 - len(digitList)):
                 digitList.insert(0, 0)
-        print(digitList)
 
+        # j is the index for sinoOrders
         j = 0
         zero = False
         for i in range(len(digitList)*2):
+            # For even indeces, add a sinoUnit at the beginning of koreanString
             if (i % 2 == 0):
                 unitIndex = digitList[len(digitList)-i//2-1]
 
@@ -29,6 +32,8 @@ def translateNumber(x):
                     continue
 
                 koreanString = sinoUnits[unitIndex-1] + koreanString
+
+            # For odd indeces, put a sinoOrder at the beginning of koreanString
             else:
                 if (j > len(digitList)/2+0.6 or sinoUnits[unitIndex-2] == 0):
                     zero = False
@@ -53,30 +58,74 @@ def translateNumber(x):
         # Remove ones
         koreanString = koreanString.replace('일', '', onesCount)
 
+    elif _mode == 1:
+        if (len(digitList) == 1):
+            koreanString = pureUnits[digitList[0]]
+        elif(len(digitList) == 2):
+            koreanString = pureTens[digitList[0]] + pureUnits[digitList[1]]
+        else:
+            print("Number of digits is invalid for pure korean counting.")
+
     else:
-        print('mode 2')
+        print("Invalid _mode.")
 
     return(koreanString)
 
-def randomNumberGenerator(maxMagnitude):
-    magnitude = round(random()*maxMagnitude)
-    return round(random()*10**magnitude-0.5)
 
+def randomNumberGenerator():
+    if (mode == 0):
+        magnitude = round(random()*5)
+        x = round(random()*10**magnitude-0.5)
+    elif (mode == 1):
+        x = round(random()*50-0.5)
+    if x == 0:
+        x = 1
+    return x
+
+def chooseMode():
+    validMode = False
+    while (validMode == False):
+        mode = input('Type 0 for Sino-Korean questions, 1 for Pure-Korean questions, or 2 for a mixture of questions. ')
+        mode = int(mode)
+        global randomMode
+        if mode == 0 or mode == 1:
+            validMode = True
+            randomMode = False
+            return mode
+        elif mode == 2:
+            validMode = True
+            randomMode = True
+        else:
+            print('Invalid mode.')
 
 playing = True
+modeStrings = ['Sino-Korean','Pure Korean']
+randomMode = False
+mode = chooseMode()
 
 while (playing):
-    number = randomNumberGenerator(5)
-    translatedNumber = translateNumber(number)
-    print('Write ' + str(number) + ' using Sino-Korean:')
+
+    # Setup numbers for question
+    if randomMode == True:
+        mode = round(random()*2-0.5)
+    number = randomNumberGenerator()
+    translatedNumber = translateNumber(number, mode)
+
+    # Ask question
+    print('Write ' + str(number) + ' using ' + modeStrings[mode] + ':')
     guess = input()
+
+    # Respond based on answer to question
     if (guess == translatedNumber):
         print('Correct')
     else:
         print('Incorrect')
-    print(str(number) + ' in korean is ' + translatedNumber)
+    print(str(number) + ' in ' + modeStrings[mode] + ' is ' + translatedNumber)
 
+    # Let the user decide what to do next
     play = input(
-        'Type \'exit\' or \'출구\' to stop, or press enter to continue.')
+        'Type \'exit\' or \'출구\' to stop, type \'m\' to change modes, or press enter to continue.')
     if (play == 'exit' or play == '출구'):
         playing = False
+    elif(play == 'm'):
+        mode = chooseMode()
