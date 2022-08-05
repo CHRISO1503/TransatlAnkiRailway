@@ -86,7 +86,9 @@ function replaceWords(htmlText) {
     for (i = 0; i < dictionary.length; i++) {
         var searchRegExp = new RegExp(' ' + dictionary[i].english + '( |\\.|,)', 'gi');
         for (j = 0; j < htmlText.length; j++) {
-            htmlText[j] = htmlText[j].replace(searchRegExp, ' ' + dictionary[i].korean + ' ');
+            htmlText[j] = htmlText[j].replace(searchRegExp, function (x) {
+                return x[0] + dictionary[i].korean + x[x.length - 1]
+            });
         }
     }
     console.log(htmlText);
