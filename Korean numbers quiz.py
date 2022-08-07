@@ -4,9 +4,10 @@ from unicodedata import digit
 # mode 0 = sino-korean, mode 1 = pure korean
 mode = 1
 sinoUnits = ['일', '이', '삼', '사', '오', '욕', '칠', '팔', '구']
-sinoOrders = ['십', '백', '천', '만']
+sinoOrders = ['만', '천', '백', '십']
 pureUnits = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉']
 pureTens = ['', '열', '스물', '서른', '마흔', '쉰']
+pureCounterExceptions = [1, 2, 3, 4, '한', '두', '세', '네']
 
 
 def translateNumber(x, _mode):
@@ -82,10 +83,12 @@ def randomNumberGenerator():
         x = 1
     return x
 
+
 def chooseMode():
     validMode = False
     while (validMode == False):
-        mode = input('Type 0 for Sino-Korean questions, 1 for Pure-Korean questions, or 2 for a mixture of questions. ')
+        mode = input(
+            'Type 0 for Sino-Korean questions, 1 for Pure-Korean questions, or 2 for a mixture of questions. ')
         mode = int(mode)
         global randomMode
         if mode == 0 or mode == 1:
@@ -98,8 +101,9 @@ def chooseMode():
         else:
             print('Invalid mode.')
 
+
 playing = True
-modeStrings = ['Sino-Korean','Pure Korean']
+modeStrings = ['Sino-Korean', 'Pure Korean']
 randomMode = False
 mode = chooseMode()
 
@@ -110,6 +114,7 @@ while (playing):
         mode = round(random()*2-0.5)
     number = randomNumberGenerator()
     translatedNumber = translateNumber(number, mode)
+    numberWithCounter = translatedNumber
 
     # Ask question
     print('Write ' + str(number) + ' using ' + modeStrings[mode] + ':')
@@ -120,7 +125,21 @@ while (playing):
         print('Correct')
     else:
         print('Incorrect')
-    print(str(number) + ' in ' + modeStrings[mode] + ' is ' + translatedNumber)
+    print(str(number) + ' in ' +
+          modeStrings[mode] + ' is ' + translatedNumber + '.')
+
+    # Show the number in front of a counter if it is different
+    if (mode == 1):
+        if (number % 10 in pureCounterExceptions):
+            numberWithCounter = translatedNumber.rsplit(pureUnits[number % 10])
+            numberWithCounter = pureCounterExceptions[number % 10 + len(
+                pureCounterExceptions)//2 - 1].join(numberWithCounter)
+        elif (number == 20):
+            numberWithCounter = '스무'
+
+        if translatedNumber != numberWithCounter:
+            print('In front of a counter it is written ' +
+                  numberWithCounter + '.')
 
     # Let the user decide what to do next
     play = input(
@@ -129,3 +148,5 @@ while (playing):
         playing = False
     elif(play == 'm'):
         mode = chooseMode()
+
+# Could add a mode where the user writes the digits given a korean number
